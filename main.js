@@ -4,38 +4,38 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 
-// --- Scene, Camera, and Renderer Setup ---
+
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
-renderer.toneMapping = THREE.ReinhardToneMapping; // Important for bloom effect
+renderer.toneMapping = THREE.ReinhardToneMapping; 
 document.body.appendChild(renderer.domElement);
 
 camera.position.set(0, 5, 25);
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true; // Adds a smooth "inertia" to camera movement
+controls.enableDamping = true; 
 
-// --- Post-Processing (for the Glow Effect) ---
+
 const renderScene = new RenderPass(scene, camera);
 const bloomPass = new UnrealBloomPass(
     new THREE.Vector2(window.innerWidth, window.innerHeight),
-    1.5, // strength
-    0.4, // radius
-    0.85 // threshold
+    1.5, 
+    0.4,
+    0.85 
 );
 const composer = new EffectComposer(renderer);
 composer.addPass(renderScene);
 composer.addPass(bloomPass);
 
-// --- Create the Central Energy Core ---
+
 const coreGeometry = new THREE.SphereGeometry(4, 32, 32);
 const coreMaterial = new THREE.MeshBasicMaterial({ color: 0x04d9ff, wireframe: true });
 const energyCore = new THREE.Mesh(coreGeometry, coreMaterial);
 scene.add(energyCore);
 
-// --- Create the Orbital Rings ---
+
 function createRing(radius, tubeRadius, color) {
     const geometry = new THREE.TorusGeometry(radius, tubeRadius, 16, 100);
     const material = new THREE.MeshStandardMaterial({
@@ -51,9 +51,9 @@ function createRing(radius, tubeRadius, color) {
 const ring1 = createRing(8, 0.1, 0x00aaff);
 const ring2 = createRing(10, 0.1, 0x00ffff);
 const ring3 = createRing(12, 0.1, 0x4dffff);
-ring2.rotation.x = Math.PI / 2; // Rotate the second ring 90 degrees
+ring2.rotation.x = Math.PI / 2; 
 
-// --- Create a Shimmering Starfield ---
+
 const starVertices = [];
 for (let i = 0; i < 10000; i++) {
     const x = (Math.random() - 0.5) * 200;
@@ -68,33 +68,33 @@ const stars = new THREE.Points(starGeometry, starMaterial);
 scene.add(stars);
 
 
-// --- Animation Loop ---
-const clock = new THREE.Clock(); // Clock to manage time for animations
+
+const clock = new THREE.Clock(); 
 
 function animate() {
     requestAnimationFrame(animate);
-    const elapsedTime = clock.getElapsedTime(); // Get time since start
+    const elapsedTime = clock.getElapsedTime(); 
 
-    // Animate the core
+   
     energyCore.rotation.y = elapsedTime * 0.2;
     energyCore.scale.set(
         Math.sin(elapsedTime * 1.5) * 0.1 + 1,
         Math.sin(elapsedTime * 1.5) * 0.1 + 1,
         Math.sin(elapsedTime * 1.5) * 0.1 + 1
-    ); // Pulsating effect
+    ); 
 
-    // Animate the rings
+  
     ring1.rotation.z = elapsedTime * 0.3;
     ring2.rotation.z = elapsedTime * 0.3;
     ring3.rotation.y = elapsedTime * -0.2;
     
     controls.update();
-    composer.render(); // Use the composer to render the scene with post-processing
+    composer.render(); 
 }
 
 animate();
 
-// --- Handle Window Resizing ---
+
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
